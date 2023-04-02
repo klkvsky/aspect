@@ -1,91 +1,104 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from './page.module.css'
+"use client";
 
-const inter = Inter({ subsets: ['latin'] })
+import { Video } from "@/interfaces/video";
 
-export default function Home() {
+import { supabase } from "@/lib/supabaseClient";
+
+import Muuri from "muuri";
+import { useEffect, useState } from "react";
+
+import { usePathname } from "next/navigation";
+import VideoCardOld from "@/components/video-card-old";
+import VideoCard from "@/components/VIdeoCard";
+
+export default function PersonalPage() {
+  const pathname = usePathname();
+
+  const [gridRefence, setGridRefence] = useState<any>(null);
+  const [videos, setVideos] = useState<Video[]>([]);
+
+  async function fetchVideos() {
+    const { data, error } = await supabase.storage.from("videos").list("", {
+      limit: 100,
+      offset: 0,
+      sortBy: { column: "name", order: "asc" },
+    });
+
+    if (data) {
+      console.log(data);
+      setVideos(data as unknown as Video[]);
+    } else {
+      console.error(error);
+    }
+  }
+
+  useEffect(() => {
+    if (videos.length === 0) {
+      fetchVideos();
+    } else {
+      const grid = new Muuri(".gridMuui", {
+        items: ".item",
+        dragEnabled: true,
+        layout: {
+          fillGaps: false,
+          horizontal: false,
+          alignRight: false,
+          alignBottom: false,
+          rounding: true,
+        },
+      });
+
+      setGridRefence(grid);
+
+      setTimeout(() => {
+        grid.refreshItems().layout();
+      }, 200);
+    }
+  }, [videos]);
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main className="my-10 w-full">
+      <div className="gridMuui">
+        {videos.map((video: any, index: any) => (
+          <div
+            key={index}
+            className="item"
+            style={{
+              width: "25%",
+            }}
+            id={`item-${index}`}
           >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
+            <div className={`item-content p-[10px] w-full h-full`}>
+              <VideoCardOld
+                videoURL={`https://zqjvsefawyzwxbridxjw.supabase.co/storage/v1/object/public/videos/${
+                  pathname.split("/")[1]
+                }/${video.name}`}
+                author={video.name.split("-")[0]}
+                authorImage="https://zqjvsefawyzwxbridxjw.supabase.co/storage/v1/object/public/videos/avatars/photo.jpg"
+                tags={["#test", "#test2"]}
+                onFullscreen={() => {
+                  console.log("fullscreen");
+                }}
+                onLoad={() => {
+                  gridRefence.refreshItems().layout();
+                }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="mx-10">
+        <div className="w-[25vw]">
+          {videos[0] && (
+            <VideoCard
+              videoMetaData={videos[1]}
+              onLoad={() => {
+                gridRefence.refreshItems().layout();
+              }}
             />
-          </a>
+          )}
         </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-        <div className={styles.thirteen}>
-          <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
-        </div>
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
       </div>
     </main>
-  )
+  );
 }
