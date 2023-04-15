@@ -13,13 +13,13 @@ import {
   UpdateProfileCardAspectRatio,
 } from "@/lib/videoUtils";
 
-import Muuri from "muuri";
+import Muuri from "@/lib/localMuuri";
+
 import { useCallback, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
 import VideoCard from "@/components/VIdeoCard";
 import ProfileCard from "@/components/ProfileCard";
-import AddNewVideo from "@/components/AddNewVideo";
 
 export default function PersonalPage() {
   const pathname = usePathname();
@@ -43,23 +43,7 @@ export default function PersonalPage() {
       .range(0, 100);
 
     if (error) {
-      const grid = new Muuri(".gridMuui", {
-        items: ".item",
-        dragEnabled: true,
-        layout: {
-          fillGaps: true,
-          horizontal: false,
-          alignRight: false,
-          alignBottom: false,
-          rounding: false,
-        },
-      });
-
-      setGridRefence(grid);
-
-      setTimeout(() => {
-        grid.refreshItems().layout();
-      }, 200);
+      console.log(error);
     } else {
       // reorder videos based on position parameter
       const orderedVideos = data.sort((a, b) => {
@@ -72,9 +56,10 @@ export default function PersonalPage() {
 
   useEffect(() => {
     if (videos.length !== 0) {
+      if (!Muuri) return;
       const grid = new Muuri(".gridMuui", {
         items: ".item",
-        dragEnabled: false,
+        // dragEnabled: false,
         layout: {
           fillGaps: true,
           horizontal: false,

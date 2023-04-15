@@ -13,7 +13,7 @@ import {
   UpdateProfileCardAspectRatio,
 } from "@/lib/videoUtils";
 
-import Muuri from "muuri";
+import Muuri from "@/lib/localMuuri";
 import { useCallback, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
@@ -67,28 +67,30 @@ export default function PersonalPage() {
 
   useEffect(() => {
     if (videos.length !== 0) {
-      const grid = new Muuri(".gridMuui", {
-        items: ".item",
-        dragEnabled:
-          profile?.user_metadata.email.split("@")[0] === pathname.split("/")[1],
-        layout: {
-          fillGaps: true,
-          horizontal: false,
-          alignRight: false,
-          alignBottom: false,
-          rounding: false,
-        },
-      });
+      if (Muuri) {
+        const grid = new Muuri(".gridMuui", {
+          items: ".item",
+          // dragEnabled:
+          //   profile?.user_metadata.email.split("@")[0] === pathname.split("/")[1],
+          layout: {
+            fillGaps: true,
+            horizontal: false,
+            alignRight: false,
+            alignBottom: false,
+            rounding: false,
+          },
+        });
 
-      setGridRefence(grid);
+        setGridRefence(grid);
 
-      setTimeout(() => {
-        grid.refreshItems().layout();
-      }, 200);
+        setTimeout(() => {
+          grid.refreshItems().layout();
+        }, 200);
 
-      return () => {
-        grid.destroy();
-      };
+        return () => {
+          grid.destroy();
+        };
+      }
     } else {
       fetchVideos();
       fetchProfile();
