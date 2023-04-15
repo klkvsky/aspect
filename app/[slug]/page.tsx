@@ -69,7 +69,8 @@ export default function PersonalPage() {
     if (videos.length !== 0) {
       const grid = new Muuri(".gridMuui", {
         items: ".item",
-        dragEnabled: profile?.user_metadata.email.split("@")[0] === pathname.split("/")[1],
+        dragEnabled:
+          profile?.user_metadata.email.split("@")[0] === pathname.split("/")[1],
         layout: {
           fillGaps: true,
           horizontal: false,
