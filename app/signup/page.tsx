@@ -144,7 +144,7 @@ export default function SignUpPage() {
       <form
         className="flex flex-col items-center lg:items-start px-10 pt-[30vh] w-full lg:w-2/6 h-full gap-4 z-10 relative bg-gradient-to-b from-neutral-900/0 via-neutral-950 via-[35%] to-neutral-950"
         onSubmit={(e) => {
-        e.preventDefault();
+          e.preventDefault();
         }}
       >
         <h1 className="text-3xl font-bold transition-all ease-out duration-300 w-7/12 mr-auto">
@@ -233,6 +233,19 @@ export default function SignUpPage() {
                   onLoad={() => {
                     gridRefence.refreshItems().layout();
                   }}
+                  onDecrease={() => {
+                    console.log("");
+                  }}
+                  onIncrease={() => {
+                    console.log("");
+                  }}
+                  onDelete={() => {
+                    console.log("");
+                  }}
+                  onOpenInFullscreen={() => {
+                    console.log("");
+                  }}
+                  isUser={false}
                 />
               </div>
             </div>

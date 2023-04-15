@@ -23,7 +23,7 @@ import {
 } from "@heroicons/react/24/solid";
 
 export default function Navbar() {
-  const [profile, setProfile] = useState<User>();
+  const [profile, setProfile] = useState<User | null>();
 
   const [isProfileMenuOpen, SetIsProfileMenuOpen] = useState(false);
   const [newNotifications, setNewNotifications] = useState(true);
