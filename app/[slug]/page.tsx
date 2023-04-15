@@ -70,8 +70,10 @@ export default function PersonalPage() {
       if (Muuri) {
         const grid = new Muuri(".gridMuui", {
           items: ".item",
-          // dragEnabled:
-          //   profile?.user_metadata.email.split("@")[0] === pathname.split("/")[1],
+          // @ts-ignore
+          dragEnabled:
+            profile?.user_metadata.email.split("@")[0] ===
+            pathname.split("/")[1],
           layout: {
             fillGaps: true,
             horizontal: false,
