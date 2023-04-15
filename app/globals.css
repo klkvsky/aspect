@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  /* Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}
+
+
 .gridMuui {
   position: relative;
   max-width: 95vw;
@@ -92,3 +105,32 @@
   width: 100%;
   height: 100%;
 }
+
+
+.special-button::before {
+		content: '';
+		width: 200%; /* The upscaling allows the box to fill its container even when rotated */
+    height: 200%;
+		position: absolute;
+		bottom: -50%;
+		left: -50%;
+		transition: all 0.5s ease-in-out;
+		background: conic-gradient(
+			from 180deg at 50% 50.48%,
+			#fff 0.28deg,
+			rgba(0, 10, 53, 0) 106.33deg,
+			rgba(0, 9, 47, 0) 179.09deg,
+			#fff 150.91deg,
+			rgba(0, 9, 47, 0) 179.09deg,
+			rgba(0, 9, 47, 0) 179.09deg
+		);
+    opacity: 0.3;
+
+		animation: rotate-border 0.8s linear infinite;
+	}
+
+	@keyframes rotate-border {
+		to {
+			transform: rotate(-360deg);
+		}
+	}

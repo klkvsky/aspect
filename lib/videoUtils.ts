@@ -1,4 +1,9 @@
-export function increaseSizeOfCard(index: number, gridRefence: any) {
+export async function IncreaseSizeOfCard(
+  index: number,
+  gridRefence: any,
+  videoID: string,
+  supabase: any
+) {
   const item = document.getElementById(`item-${index}`);
 
   if (item) {
@@ -9,15 +14,28 @@ export function increaseSizeOfCard(index: number, gridRefence: any) {
     } else if (classList.contains("item--50")) {
       classList.remove("item--50");
       classList.add("item--75");
+      gridRefence.refreshItems().layout();
+      const { data, error } = await supabase
+        .from("videos")
+        .update({ size: 75 })
+        .match({ id: videoID });
     } else {
       classList.add("item--50");
+      gridRefence.refreshItems().layout();
+      const { data, error } = await supabase
+        .from("videos")
+        .update({ size: 50 })
+        .match({ id: videoID });
     }
-
-    gridRefence.refreshItems().layout();
   }
 }
 
-export function decreaseSizeOfCard(index: number, gridRefence: any) {
+export async function DecreaseSizeOfCard(
+  index: number,
+  gridRefence: any,
+  videoID: string,
+  supabase: any
+) {
   const item = document.getElementById(`item-${index}`);
 
   if (item) {
@@ -26,21 +44,30 @@ export function decreaseSizeOfCard(index: number, gridRefence: any) {
     if (classList.contains("item--75")) {
       classList.remove("item--75");
       classList.add("item--50");
+      gridRefence.refreshItems().layout();
+      const { data, error } = await supabase
+        .from("videos")
+        .update({ size: 50 })
+        .match({ id: videoID });
     } else if (classList.contains("item--50")) {
       classList.remove("item--50");
+      gridRefence.refreshItems().layout();
+      const { data, error } = await supabase
+        .from("videos")
+        .update({ size: 25 })
+        .match({ id: videoID });
     } else {
       // Do nothing, size is already at its minimum
     }
-
-    gridRefence.refreshItems().layout();
   }
 }
 
-export function updateProfileCardAspectRatio(
+export function UpdateProfileCardAspectRatio(
   aspectRatio: any,
-  gridRefence: any
+  gridRefence: any,
+  index: number
 ) {
-  const profileCard = document.getElementById("item-6");
+  const profileCard = document.getElementById(`item-${index}`);
   if (!profileCard) return;
 
   profileCard.style.setProperty("aspect-ratio", aspectRatio);

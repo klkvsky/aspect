@@ -16,10 +16,12 @@ import {
 } from "@heroicons/react/24/solid";
 
 import VideoCard from "@/components/VIdeoCard";
+import { useRouter } from "next/navigation";
 
 export default function SignUpPage() {
   const { supabase } = useSupabase();
   const pathname = usePathname();
+  const router = useRouter();
 
   const [isTyping, setIsTyping] = useState(false);
   const [isHandleAvailable, setIsHandleAvailable] = useState(false);
@@ -118,13 +120,7 @@ export default function SignUpPage() {
   }, [videos, fetchVideos]);
 
   async function signUp() {
-    console.log(
-      "signing up",
-
-      email,
-      password,
-      handle
-    );
+    console.log("signing up", email, password, handle);
     const { data, error } = await supabase.auth.signUp({
       email: email,
       password: password,
@@ -139,18 +135,24 @@ export default function SignUpPage() {
       console.log(error);
     } else {
       console.log(data);
+      router.push("/");
     }
   }
 
   return (
-    <div className="w-screen h-screen overflow-hidden flex flex-row bg-neutral-900">
-      <form className="flex flex-col items-start px-10 pt-[30vh] w-2/6 h-full gap-4 z-10 relative">
-        <h1 className="text-3xl font-bold transition-all ease-out duration-300 h-[90px]">
+    <div className="w-screen h-screen overflow-hidden flex flex-col lg:flex-row bg-neutral-900">
+      <form
+        className="flex flex-col items-center lg:items-start px-10 pt-[30vh] w-full lg:w-2/6 h-full gap-4 z-10 relative bg-gradient-to-b from-neutral-900/0 via-neutral-950 via-[35%] to-neutral-950"
+        onSubmit={(e) => {
+        e.preventDefault();
+        }}
+      >
+        <h1 className="text-3xl font-bold transition-all ease-out duration-300 w-7/12 mr-auto">
           {handle.length > 3 && !isTyping && isHandleAvailable
-            ? "Now Sign Up, with your credentials"
-            : "Check if your handle is Available"}
+            ? "Complete Registration"
+            : "Choose your handle"}
         </h1>
-        <div className="rounded-full border border-neutral-700 h-[40px] gap-2 px-3 bg-neutral-900/50 transition-all duration-300 ease-in-out flex flex-row items-center group relative w-full max-w-[300px] group focus-within:border-neutral-600 overflow-clip cursor-text mt-2">
+        <div className="rounded-full border border-neutral-700 h-[40px] gap-2 px-3 bg-neutral-900/50 transition-all duration-300 ease-in-out flex flex-row items-center group relative w-full max-w-[300px] group focus-within:border-neutral-600 overflow-clip cursor-text mt-4">
           <AtSymbolIcon className="w-5 h-5 group-focus-within:-ml-5 transition-all ease-in-out group-focus-within:opacity-0 fill-white/50" />
           <input
             type="text"
@@ -175,7 +177,7 @@ export default function SignUpPage() {
 
         <div
           className={clsx(
-            "flex flex-col gap-4 mt-5 transition-all ease-in-out duration-300 w-full",
+            "flex flex-col gap-4 mt-5 transition-all ease-in-out duration-300 w-full items-center lg:items-start",
             !isTyping && handle.length > 3 && isHandleAvailable
               ? "opacity-100"
               : "opacity-0 -mb-64"
@@ -202,7 +204,7 @@ export default function SignUpPage() {
             />
           </div>
 
-          <div
+          <button
             className="rounded-full border border-neutral-700 w-full transition-all ease-in-out duration-300 z-0 hover:border-opacity-40 group/button cursor-pointer bg-black/30 flex flex-row items-center justify-center gap-3 py-2 max-w-[300px]"
             onClick={() => {
               signUp();
@@ -210,12 +212,12 @@ export default function SignUpPage() {
           >
             <span>Sign Up</span>
             <ArrowLeftOnRectangleIcon className="w-[16px] h-auto aspect-square text-white/80 group-hover/button:scale-[1.1] group-hover/button:-scale-x-[1.1] group-hover/button:text-white transition-all ease-in-out" />
-          </div>
+          </button>
         </div>
       </form>
 
-      <div className="w-4/6 h-full overflow-scroll z-20 relative">
-        <div className="gridMuui">
+      <div className="w-full lg:w-4/6 h-full overflow-hidden lg:overflow-scroll lg:z-20 lg:relative fixed top-0 left-0 z-0">
+        <div className="gridMuui relative">
           {videos.map((video: any, index: any) => (
             <div
               key={index}
@@ -225,7 +227,7 @@ export default function SignUpPage() {
                 width: "50%",
               }}
             >
-              <div className={`item-content p-[10px] w-full h-full`}>
+              <div className={`item-content p-[5px] w-full h-full`}>
                 <VideoCard
                   videoMetaData={video}
                   onLoad={() => {

@@ -2,12 +2,14 @@
 
 import clsx from "clsx";
 
+import { User } from "@/interfaces/user";
 import { useState, useCallback, useEffect } from "react";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { useSupabase } from "../app/supabase-provider";
+import { useSupabase } from "@/app/supabase-provider";
 
 import {
   UserGroupIcon,
@@ -21,6 +23,8 @@ import {
 } from "@heroicons/react/24/solid";
 
 export default function Navbar() {
+  const [profile, setProfile] = useState<User>();
+
   const [isProfileMenuOpen, SetIsProfileMenuOpen] = useState(false);
   const [newNotifications, setNewNotifications] = useState(true);
 
@@ -29,8 +33,24 @@ export default function Navbar() {
   const [email, setEmail] = useState("");
 
   const { supabase } = useSupabase();
-
   const router = useRouter();
+
+  const fetchProfile = useCallback(async () => {
+    const { data, error } = await supabase.auth.getUser();
+
+    if (data) {
+      setProfile(data.user as unknown as User);
+    } else {
+      console.error(error);
+    }
+  }, [supabase]);
+
+  useEffect(() => {
+    if (!profile && session) {
+      fetchProfile();
+    }
+    console.log(profile);
+  }, [fetchProfile, profile, session]);
 
   async function signInWithEmail() {
     if (!email) return;
@@ -49,12 +69,25 @@ export default function Navbar() {
     }
   }
 
+  async function signInWithGoogle() {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+    });
+
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("google data:", data);
+    }
+  }
+
   async function signOut() {
     const { error } = await supabase.auth.signOut();
     if (error) {
       console.log(error);
     }
     setSession(null);
+    setProfile(null);
     router.refresh();
   }
 
@@ -135,18 +168,21 @@ export default function Navbar() {
           loginModalOpen && "opacity-0 pointer-events-none  translate-y-[20%]"
         )}
       >
-        <div className="rounded-full border border-neutral-700 w-[40px] h-auto aspect-square transition-all ease-in-out duration-300 z-0 grid place-items-center hover:border-opacity-40 group/button cursor-pointer bg-black/40">
+        <Link
+          href="/"
+          className="rounded-full border border-neutral-700 w-[40px] h-auto aspect-square transition-all ease-in-out duration-300 z-0 grid place-items-center hover:border-opacity-40 group/button cursor-pointer bg-black/40"
+        >
           <RectangleStackIcon className="w-1/2 h-auto aspect-square text-white/80  group-hover/button:scale-[1.1] group-hover/button:text-white transition-all ease-in-out" />
-        </div>
+        </Link>
         {session && (
           <div className="flex flex-row items-center gap-2">
-            <div className="rounded-full border border-neutral-700 w-[40px] h-auto aspect-square transition-all ease-in-out duration-300 z-0 grid place-items-center hover:border-opacity-40 group/button cursor-pointer bg-black/40">
+            <div className="rounded-full border border-neutral-700 w-[40px] h-auto aspect-square transition-all ease-in-out duration-300 z-0 grid place-items-center hover:border-opacity-40 group/button cursor-pointer bg-black/40 hidden">
               <UserGroupIcon className="w-2/4 h-auto aspect-square text-white/80  group-hover/button:scale-[1.1] group-hover/button:text-white transition-all ease-in-out" />
             </div>
             <div className="rounded-full border border-neutral-700 w-[40px] h-auto aspect-square transition-all ease-in-out duration-300 z-0 grid place-items-center hover:border-opacity-40 group/button cursor-pointer bg-black/30">
               <MagnifyingGlassIcon className="w-2/4 h-auto aspect-square text-white/80 group-hover/button:scale-[1.1] group-hover/button:text-white transition-all ease-in-out" />
             </div>
-            <div className="rounded-full border border-neutral-700 w-[40px] h-auto aspect-square transition-all ease-in-out duration-300 z-0 grid place-items-center hover:border-opacity-40 group/button cursor-pointer bg-black/40">
+            <div className="rounded-full border border-neutral-700 w-[40px] h-auto aspect-square transition-all ease-in-out duration-300 z-0 grid place-items-center hover:border-opacity-40 group/button cursor-pointer bg-black/40 hidden">
               {newNotifications ? (
                 <BellAlertIcon className="w-2/4 h-auto aspect-square text-white/80 group-hover/button:scale-[1.1] group-hover/button:text-white transition-all ease-in-out" />
               ) : (
@@ -158,21 +194,28 @@ export default function Navbar() {
         <div
           className="rounded-full border border-neutral-600 w-[40px] h-auto aspect-square transition-all ease-in-out duration-300 z-0 grid place-items-center hover:border-neutral-400 group/avatar cursor-pointer relative bg-black/40"
           onClick={() => {
-            if (!session) setLoginModalOpen(!loginModalOpen);
+            if (!session) signInWithGoogle();
             SetIsProfileMenuOpen(!isProfileMenuOpen);
           }}
         >
           <div
-            className={`absolute -top-full right-0 shadow-[0_8px_30px_rgba(255,255,255,.06)] bg-neutral-800 border border-neutral-700 text-white w-[256px] rounded-[8px] h-fit z-[100] flex flex-col text-[14px] overflow-hidden transition-all duration-500 ${
+            className={clsx(
+              "absolute -top-full right-0 shadow-[0_8px_30px_rgba(255,255,255,.06)] bg-neutral-800 border border-neutral-700 text-white w-[256px] rounded-[8px] h-fit z-[100] flex flex-col text-[14px] overflow-hidden transition-all duration-500",
               !isProfileMenuOpen
-                ? "opacity-0 translate-x-[5%] scale-95 pointer-events-none  -translate-y-[60%]"
-                : "opacity-100 translate-x-[5%] sacle-100 -translate-y-[90%]"
-            }`}
+                ? "opacity-0 translate-x-[25%] scale-95 pointer-events-none  -translate-y-[60%]"
+                : "opacity-100 translate-x-[23%] sacle-100 -translate-y-[90%]",
+              !profile && "hidden"
+            )}
           >
-            <div className="flex flex-row pt-[12px] pb-[8px] px-[20px] hover:bg-neutral-700 gap-1 capitalize">
-              <h4 className="text-[.875rem]">test</h4>
-              <p className="opacity-50">testing</p>
-            </div>
+            <Link
+              href={`/${profile?.user_metadata.email.split("@")[0]}`}
+              className="flex flex-col items-center pt-[12px] pb-[8px] px-[20px] hover:bg-neutral-700 gap-1 capitalize"
+            >
+              <h4 className="text-[.8rem] text-center">
+                {profile?.user_metadata.full_name}
+              </h4>
+              <p className="opacity-50 text-xs lowercase">{profile?.email}</p>
+            </Link>
             <button
               onClick={() => {
                 signOut();
@@ -184,9 +227,9 @@ export default function Navbar() {
               Logout
             </button>
           </div>
-          {session ? (
+          {profile?.user_metadata ? (
             <Image
-              src="https://zqjvsefawyzwxbridxjw.supabase.co/storage/v1/object/public/videos/avatars/photo.jpg"
+              src={profile?.user_metadata.picture}
               fill
               priority
               sizes="40px"

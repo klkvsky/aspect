@@ -1,6 +1,7 @@
 "use client";
 import { Video } from "@/interfaces/video";
 
+import { useSupabase } from "@/app/supabase-provider";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 
@@ -11,7 +12,11 @@ import {
   SpeakerWaveIcon,
   SpeakerXMarkIcon,
   ArrowsPointingInIcon,
+  TrashIcon,
+  PlusIcon,
+  MinusIcon,
 } from "@heroicons/react/24/solid";
+import Link from "next/link";
 
 export default function VideoCard(props: {
   videoMetaData: Video;
@@ -19,16 +24,22 @@ export default function VideoCard(props: {
   onIncrease: () => void;
   onDecrease: () => void;
   isUser: boolean;
+  onOpenInFullscreen: () => void;
+  onDelete: () => void;
 }) {
-  const { videoMetaData, onLoad, onDecrease, onIncrease, isUser } = props;
+  const {
+    videoMetaData,
+    onLoad,
+    onDecrease,
+    onIncrease,
+    isUser,
+    onOpenInFullscreen,
+    onDelete,
+  } = props;
 
   const pathname = usePathname();
-
-  const videoURL = `${
-    process.env.NEXT_PUBLIC_SUPABASE_URL
-  }/storage/v1/object/public/videos/${pathname.split("/")[1]}/${
-    videoMetaData.name
-  }`;
+  const { supabase } = useSupabase();
+  const [authorImage, setAuthorImage] = useState<string>();
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -97,6 +108,7 @@ export default function VideoCard(props: {
   }, [isFullscreen]);
 
   useEffect(() => {
+    fetchAuthorImage();
     const video = videoRef.current;
 
     if (!video) return;
@@ -121,9 +133,22 @@ export default function VideoCard(props: {
     }
   }
 
+  const fetchAuthorImage = async () => {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("avatar_url")
+      .eq("username", videoMetaData.author);
+
+    if (error) {
+      console.log(error);
+    } else {
+      setAuthorImage(data[0].avatar_url);
+    }
+  };
+
   return (
     <div
-      className="w-full relative group rounded-[14px] hover:border-opacity-50 transition-all ease-in-out group/main z-[999]"
+      className="relative group rounded-[6px] lg:rounded-[10px] transition-all ease-in-out group/main w-full"
       onClick={() => {
         setIsMuted(!isMuted);
       }}
@@ -138,7 +163,7 @@ export default function VideoCard(props: {
         ref={videoRef}
         loop={true}
         muted={isMuted}
-        className="transition-all max-w-[95vw] relative origin-center rounded-[14px] select-none outline-none w-full h-auto"
+        className="transition-all ease-in-out max-w-[95vw] relative origin-center rounded-[6px] lg:rounded-[10px] select-none outline-none border border-[#363636]"
         style={{
           transform: isFullscreen ? `translate(${centerPosition})` : "",
           width: isFullscreen ? newDimensions.width : "100%",
@@ -148,12 +173,12 @@ export default function VideoCard(props: {
           onLoad();
         }}
       >
-        <source src={videoURL} />
+        <source src={videoMetaData.url} className="z-0 relative" />
         <track kind="captions" />
       </video>
 
       <div
-        className="absolute top-0 left-0 z-10 rounded-[14px] flex flex-col justify-between origin-center transition-all ease-in-out p-1 border border-[#363636]"
+        className="absolute top-0 left-0 w-full h-full z-10 transition-all ease-in-out duration-200"
         style={{
           transform: isFullscreen ? `translate(${centerPosition})` : "",
           width: isFullscreen ? newDimensions.width : "100%",
@@ -161,68 +186,86 @@ export default function VideoCard(props: {
         }}
       >
         <button
-          className="w-[26px] h-[26px] aspect-square rounded-full bg-neutral-950/50 backdrop-blur-sm border border-neutral-700 hover:border-opacity-50 p-1.5 hover:!scale-[1.04] active:!scale-[0.96] transition-all ease-in-out opacity-0 group-hover:opacity-50 hover:!opacity-100 grid place-items-center ml-auto"
+          className="w-[26px] h-[26px] aspect-square rounded-full bg-neutral-950/50 backdrop-blur-sm hover:border-opacity-50 p-1.5 hover:!scale-[1.04] active:!scale-[0.96] transition-all ease-in-out opacity-0 group-hover:opacity-50 hover:!opacity-100 grid place-items-center ml-auto absolute top-2 right-2"
           onClick={() => {
             setIsFullscreen(!isFullscreen);
+            onOpenInFullscreen();
           }}
         >
-          <ArrowsPointingOutIcon className="w-full h-auto aspect-square text-white transition-all ease-in-out scale-75 group-hover:scale-100 duration-200" />
+          <ArrowsPointingOutIcon className="w-full h-auto aspect-square text-white transition-all ease-in-out scale-75 group-hover:scale-100 duration-200 z-50" />
         </button>
 
-        <div className="mt-auto flex flex-row items-center justify-between w-full">
+        {isUser && (
+          <button
+            className="w-[26px] h-[26px] aspect-square rounded-full bg-neutral-950/50 backdrop-blur-sm hover:border-opacity-50 p-1.5 hover:!scale-[1.04] active:!scale-[0.96] transition-all ease-in-out opacity-0 group-hover:opacity-50 hover:!opacity-100 grid place-items-center ml-auto absolute top-2 left-2"
+            onClick={() => {
+              onDelete();
+            }}
+          >
+            <TrashIcon className="w-full h-auto aspect-square text-red-500 transition-all ease-in-out scale-75 group-hover:scale-125 duration-200" />
+          </button>
+        )}
+
+        <div className="absolute bottom-2 left-2">
           {isUser ? (
             <div className="flex flex-row items-center gap-2">
               <button
-                className="w-[26px] h-[26px] aspect-square rounded-full bg-neutral-950/50 backdrop-blur-sm border border-neutral-700 hover:border-opacity-50 p-1.5 hover:!scale-[1.04] active:!scale-[0.96] opacity-0 group-hover:opacity-50 hover:!opacity-100 grid place-items-center transition-all ease-in-out"
+                className="w-[26px] h-[26px] aspect-square rounded-full bg-neutral-950/50 backdrop-blur-sm border border-neutral-700 hover:border-opacity-50 p-1 hover:!scale-[1.04] active:!scale-[0.96] opacity-0 group-hover:opacity-50 hover:!opacity-100 grid place-items-center transition-all ease-in-out"
                 onClick={() => {
                   onIncrease();
                 }}
               >
-                <ArrowsPointingOutIcon className="w-full h-auto aspect-square text-white transition-all ease-in-out scale-75 group-hover:scale-100 duration-200" />
+                <PlusIcon className="w-full h-auto aspect-square text-white transition-all ease-in-out scale-75 group-hover:scale-100 duration-200" />
               </button>
 
               <button
-                className="w-[26px] h-[26px] aspect-square rounded-full bg-neutral-950/50 backdrop-blur-sm border border-neutral-700 hover:border-opacity-50 p-1.5 hover:!scale-[1.04] active:!scale-[0.96] opacity-0 group-hover:opacity-50 hover:!opacity-100 grid place-items-center transition-all ease-in-out"
+                className="w-[26px] h-[26px] aspect-square rounded-full bg-neutral-950/50 backdrop-blur-sm border border-neutral-700 hover:border-opacity-50 p-1 hover:!scale-[1.04] active:!scale-[0.96] opacity-0 group-hover:opacity-50 hover:!opacity-100 grid place-items-center transition-all ease-in-out"
                 onClick={() => {
                   onDecrease();
                 }}
               >
-                <ArrowsPointingInIcon className="w-full h-auto aspect-square text-white transition-all ease-in-out scale-75 group-hover:scale-100 duration-200" />
+                <MinusIcon className="w-full h-auto aspect-square text-white transition-all ease-in-out scale-75 group-hover:scale-100 duration-200" />
               </button>
             </div>
-          ) : pathname === "/" ? (
+          ) : pathname !== "/" ? (
             <div className="opacity-0" />
           ) : (
-            <button className="flex flex-row items-center gap-[4px] relative p-1 pr-2 hover:!scale-[1.04] active:!scale-[0.96] transition-all ease-in-out w-fit group-hover:opacity-50 hover:!opacity-100 group/avatar">
+            <Link
+              href={`/${videoMetaData.author}`}
+              className="flex flex-row items-center gap-[4px] relative p-1 pr-2 hover:!scale-[1.04] active:!scale-[0.96] transition-all ease-in-out w-fit group-hover:opacity-50 hover:!opacity-100 group/avatar"
+            >
               <div className="rounded-full bg-neutral-950/50 backdrop-blur-sm border border-neutral-700 absolute top-0 left-0 w-full group-hover:w-[26px] group-hover:h-[26px] group-hover:translate-y-[1px] h-full transition-all ease-in-out duration-300 z-0 group-hover/avatar:!w-full" />
 
-              <Image
-                src="https://zqjvsefawyzwxbridxjw.supabase.co/storage/v1/object/public/videos/avatars/photo.jpg"
-                width={18}
-                height={18}
-                alt="Profile picture of Me"
-                className="object-cover rounded-full overflow-hidden aspect-square z-10"
-              />
+              {authorImage ? (
+                <Image
+                  src={authorImage}
+                  width={18}
+                  height={18}
+                  alt="Profile picture of Me"
+                  className="object-cover rounded-full overflow-hidden aspect-square z-10"
+                />
+              ) : (
+                <div className="w-[18px] h-[18px] aspect-square rounded-full z-10 bg-neutral-700 animate-pulse" />
+              )}
 
-              <span className="text-sm font-semibold text-white/50 group-hover:opacity-0 group-hover:pointer-events-none z-10 group-hover:max-w-0 group-hover/avatar:!opacity-100 group-hover/avatar:pointer-events-auto group-hover/avatar:!max-w-full group-hover/avatar:text-white duration-300 capitalize">
-                {pathname.split("/")[1]}
+              <span className="text-sm font-semibold text-white/50 group-hover:opacity-0 group-hover:pointer-events-none z-10 group-hover:max-w-0 group-hover/avatar:!opacity-100 group-hover/avatar:pointer-events-auto group-hover/avatar:!max-w-full group-hover/avatar:text-white duration-300">
+                {videoMetaData.author}
               </span>
-            </button>
+            </Link>
           )}
-
-          <button
-            className="w-[26px] h-[26px] aspect-square rounded-full bg-neutral-950/50 backdrop-blur-sm border border-neutral-700 hover:border-opacity-50 p-1.5 hover:!scale-[1.04] active:!scale-[0.96] opacity-0 group-hover:opacity-50 hover:!opacity-100 grid place-items-center transition-all ease-in-out"
-            onClick={() => {
-              setIsMuted(!isMuted);
-            }}
-          >
-            {isMuted ? (
-              <SpeakerXMarkIcon className="w-full h-auto aspect-square text-white transition-all ease-in-out scale-75 group-hover:scale-100 duration-200" />
-            ) : (
-              <SpeakerWaveIcon className="w-full h-auto aspect-square text-white transition-all ease-in-out scale-75 group-hover:scale-100 duration-200" />
-            )}
-          </button>
         </div>
+        <button
+          className="w-[26px] h-[26px] aspect-square rounded-full bg-neutral-950/50 backdrop-blur-sm border border-neutral-700 hover:border-opacity-50 p-1.5 hover:!scale-[1.04] active:!scale-[0.96] opacity-0 group-hover:opacity-50 hover:!opacity-100 grid place-items-center transition-all ease-in-out absolute bottom-2 right-2"
+          onClick={() => {
+            setIsMuted(!isMuted);
+          }}
+        >
+          {isMuted ? (
+            <SpeakerXMarkIcon className="w-full h-auto aspect-square text-white transition-all ease-in-out scale-75 group-hover:scale-100 duration-200" />
+          ) : (
+            <SpeakerWaveIcon className="w-full h-auto aspect-square text-white transition-all ease-in-out scale-75 group-hover:scale-100 duration-200" />
+          )}
+        </button>
       </div>
     </div>
   );

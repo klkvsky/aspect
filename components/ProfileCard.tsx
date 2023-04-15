@@ -80,6 +80,7 @@ export default function ProfileCard(props: {
       <Image
         src={photo}
         fill
+        sizes="(max-width: 768px) 100vw, 768px"
         alt="Profile picture of Me"
         className="object-cover z-0 relative transition-all ease-in-out"
         priority={true}
