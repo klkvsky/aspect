@@ -278,32 +278,28 @@ export default function PersonalPage() {
               data-name={video.id}
               id={`item-${index}`}
             >
-              {profile?.user_metadata.email.split("@")[0] ===
-                pathname.split("/")[1] &&
-                !videoInFullscreen && (
-                  <div
-                    className={clsx(
-                      "absolute top-[7.5px] left-[7.5px] w-[calc(100%-15px)] h-[calc(100%-15px)] rounded-[14px] overflow-hidden transition-all ease-in-out before:transition-all before:ease-in-out",
-                      syncingObject === `item-${index}`
-                        ? "special-button"
-                        : "notLoading"
-                    )}
-                  />
-                )}
-              {profile?.user_metadata.email.split("@")[0] ===
-                pathname.split("/")[1] &&
-                !videoInFullscreen && (
-                  <div
-                    className={clsx(
-                      "flex flex-row items-center gap-1 bg-black/50 px-2.5 py-1 rounded-full border border-neutral-600 w-fit mx-auto backdrop-blur-md absolute top-6 left-1/2 -translate-x-1/2 z-20 text-xs transition-all ease-in-out duration-300",
-                      syncingObject === `item-${index}`
-                        ? syncingStatus === "Syncing" && "animate-pulse"
-                        : "opacity-0 pointer-events-none -translate-y-4"
-                    )}
-                  >
-                    {syncingStatus}
-                  </div>
-                )}
+              {videoInFullscreen === -1 && (
+                <div
+                  className={clsx(
+                    "absolute top-[7.5px] left-[7.5px] w-[calc(100%-15px)] h-[calc(100%-15px)] rounded-[14px] overflow-hidden transition-all ease-in-out before:transition-all before:ease-in-out",
+                    syncingObject === `item-${index}`
+                      ? "special-button"
+                      : "notLoading"
+                  )}
+                />
+              )}
+              {videoInFullscreen === -1 && (
+                <div
+                  className={clsx(
+                    "flex flex-row items-center gap-1 bg-black/50 px-2.5 py-1 rounded-full border border-neutral-600 w-fit mx-auto backdrop-blur-md absolute top-6 left-1/2 -translate-x-1/2 z-20 text-xs transition-all ease-in-out duration-300",
+                    syncingObject === `item-${index}`
+                      ? syncingStatus === "Syncing" && "animate-pulse"
+                      : "opacity-0 pointer-events-none -translate-y-4"
+                  )}
+                >
+                  {syncingStatus}
+                </div>
+              )}
               <div
                 className="item-content p-[10px] w-full h-full relative z-10"
                 style={
