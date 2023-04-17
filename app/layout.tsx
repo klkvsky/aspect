@@ -16,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <SupabaseProvider>
-        <body className="bg-neutral-950 w-screen min-h-screen text-white">
+        <body className="bg-neutral-950 w-screen min-h-screen text-white overflow-x-hidden">
           <Navbar />
           {children}
         </body>

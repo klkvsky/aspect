@@ -49,7 +49,7 @@ export default function Navbar() {
     if (!profile && session) {
       fetchProfile();
     }
-    console.log(profile);
+    // console.log(profile);
   }, [fetchProfile, profile, session]);
 
   async function signInWithEmail() {
@@ -77,7 +77,7 @@ export default function Navbar() {
     if (error) {
       console.log(error);
     } else {
-      console.log("google data:", data);
+      // console.log("google data:", data);
     }
   }
 
@@ -174,15 +174,15 @@ export default function Navbar() {
         >
           <RectangleStackIcon className="w-1/2 h-auto aspect-square text-white/80  group-hover/button:scale-[1.1] group-hover/button:text-white transition-all ease-in-out" />
         </Link>
-        {session && (
+        {false && (
           <div className="flex flex-row items-center gap-2">
-            <div className="rounded-full border border-neutral-700 w-[40px] h-auto aspect-square transition-all ease-in-out duration-300 z-0 grid place-items-center hover:border-opacity-40 group/button cursor-pointer bg-black/40 hidden">
+            <div className="rounded-full border border-neutral-700 w-[40px] h-auto aspect-square transition-all ease-in-out duration-300 z-0 grid place-items-center hover:border-opacity-40 group/button cursor-pointer bg-black/40 ">
               <UserGroupIcon className="w-2/4 h-auto aspect-square text-white/80  group-hover/button:scale-[1.1] group-hover/button:text-white transition-all ease-in-out" />
             </div>
-            <div className="rounded-full border border-neutral-700 w-[40px] h-auto aspect-square transition-all ease-in-out duration-300 z-0 grid place-items-center hover:border-opacity-40 group/button cursor-pointer bg-black/30">
+            <div className="rounded-full border border-neutral-700 w-[40px] h-auto aspect-square transition-all ease-in-out duration-300 z-0 grid place-items-center hover:border-opacity-40 group/button cursor-pointer bg-black/30 ">
               <MagnifyingGlassIcon className="w-2/4 h-auto aspect-square text-white/80 group-hover/button:scale-[1.1] group-hover/button:text-white transition-all ease-in-out" />
             </div>
-            <div className="rounded-full border border-neutral-700 w-[40px] h-auto aspect-square transition-all ease-in-out duration-300 z-0 grid place-items-center hover:border-opacity-40 group/button cursor-pointer bg-black/40 hidden">
+            <div className="rounded-full border border-neutral-700 w-[40px] h-auto aspect-square transition-all ease-in-out duration-300 z-0 grid place-items-center hover:border-opacity-40 group/button cursor-pointer bg-black/40">
               {newNotifications ? (
                 <BellAlertIcon className="w-2/4 h-auto aspect-square text-white/80 group-hover/button:scale-[1.1] group-hover/button:text-white transition-all ease-in-out" />
               ) : (
@@ -200,7 +200,7 @@ export default function Navbar() {
         >
           <div
             className={clsx(
-              "absolute -top-full right-0 shadow-[0_8px_30px_rgba(255,255,255,.06)] bg-neutral-800 border border-neutral-700 text-white w-[256px] rounded-[8px] h-fit z-[100] flex flex-col text-[14px] overflow-hidden transition-all duration-500",
+              "absolute -top-full right-0 shadow-[0_8px_30px_rgba(255,255,255,.06)] bg-neutral-800 border border-neutral-700 text-white w-[256px] rounded-[8px] h-fit z-[100] flex flex-col text-[14px] overflow-hidden transition-all duration-500 hidden",
               !isProfileMenuOpen
                 ? "opacity-0 translate-x-[25%] scale-95 pointer-events-none  -translate-y-[60%]"
                 : "opacity-100 translate-x-[23%] sacle-100 -translate-y-[90%]",
@@ -211,10 +211,13 @@ export default function Navbar() {
               href={`/${profile?.user_metadata.email.split("@")[0]}`}
               className="flex flex-col items-center pt-[12px] pb-[8px] px-[20px] hover:bg-neutral-700 gap-1 capitalize"
             >
-              <h4 className="text-[.8rem] text-center">
+              <h4 className="text-[.8rem] text-center">Profile</h4>
+              <h4 className="text-[.8rem] text-center hidden">
                 {profile?.user_metadata.full_name}
               </h4>
-              <p className="opacity-50 text-xs lowercase">{profile?.email}</p>
+              <p className="opacity-50 text-xs lowercase hidden">
+                {profile?.email}
+              </p>
             </Link>
             <button
               onClick={() => {
@@ -228,14 +231,16 @@ export default function Navbar() {
             </button>
           </div>
           {profile?.user_metadata ? (
-            <Image
-              src={profile?.user_metadata.picture}
-              fill
-              priority
-              sizes="40px"
-              alt="Profile picture of Me"
-              className="object-cover rounded-full overflow-hidden aspect-square z-10 h-auto w-full"
-            />
+            <Link href={`/${profile?.user_metadata.email.split("@")[0]}`}>
+              <Image
+                src={profile?.user_metadata.picture}
+                fill
+                priority
+                sizes="40px"
+                alt="Profile picture of Me"
+                className="object-cover rounded-full overflow-hidden aspect-square z-10 h-auto w-full"
+              />
+            </Link>
           ) : (
             <UserIcon className="w-2/4 h-auto aspect-square text-white/80 group-hover/button:scale-[1.1] group-hover/button:text-white transition-all ease-in-out" />
           )}

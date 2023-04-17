@@ -4,6 +4,7 @@ import { Video } from "@/interfaces/video";
 import { useSupabase } from "@/app/supabase-provider";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import clsx from "clsx";
 
 import { useState, useEffect, useRef } from "react";
 
@@ -42,6 +43,8 @@ export default function VideoCard(props: {
   const [authorImage, setAuthorImage] = useState<string>();
 
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const [isMuted, setIsMuted] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
@@ -109,6 +112,7 @@ export default function VideoCard(props: {
 
   useEffect(() => {
     fetchAuthorImage();
+
     const video = videoRef.current;
 
     if (!video) return;
@@ -163,7 +167,10 @@ export default function VideoCard(props: {
         ref={videoRef}
         loop={true}
         muted={isMuted}
-        className="transition-all ease-in-out max-w-[95vw] relative origin-center rounded-[6px] lg:rounded-[10px] select-none outline-none border border-[#363636]"
+        className={clsx(
+          "transition-all ease-in-out max-w-[95vw] relative origin-center rounded-[6px] lg:rounded-[10px] select-none outline-none",
+          isLoaded && "border border-[#363636]"
+        )}
         style={{
           transform: isFullscreen ? `translate(${centerPosition})` : "",
           width: isFullscreen ? newDimensions.width : "100%",
@@ -172,13 +179,19 @@ export default function VideoCard(props: {
         onLoadedMetadata={() => {
           onLoad();
         }}
+        onLoadedData={() => {
+          setIsLoaded(true);
+        }}
       >
         <source src={videoMetaData.url} className="z-0 relative" />
         <track kind="captions" />
       </video>
 
       <div
-        className="absolute top-0 left-0 w-full h-full z-10 transition-all ease-in-out duration-200"
+        className={clsx(
+          "absolute top-0 left-0 w-full h-full z-10 transition-all ease-in-out duration-200",
+          !isLoaded && "opacity-0"
+        )}
         style={{
           transform: isFullscreen ? `translate(${centerPosition})` : "",
           width: isFullscreen ? newDimensions.width : "100%",
