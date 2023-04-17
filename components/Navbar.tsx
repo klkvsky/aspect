@@ -65,7 +65,7 @@ export default function Navbar() {
     if (error) {
       console.log(error);
     } else {
-      console.log(data);
+      // console.log(data);
     }
   }
 
@@ -231,7 +231,10 @@ export default function Navbar() {
             </button>
           </div>
           {profile?.user_metadata ? (
-            <Link href={`/${profile?.user_metadata.email.split("@")[0]}`}>
+            <Link
+              href={`/${profile?.user_metadata.email.split("@")[0]}`}
+              className="relative w-[40px] h-[40px]"
+            >
               <Image
                 src={profile?.user_metadata.picture}
                 fill

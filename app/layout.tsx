@@ -2,10 +2,12 @@ import "./globals.css";
 
 import SupabaseProvider from "./supabase-provider";
 import Navbar from "@/components/Navbar";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata = {
   title: "Aspect - A video sharing platform for creators",
-  description: "Showcase Your Video Content in a Beautifully Designed Page Tailored to Your liking. Created with You in Mind",
+  description:
+    "Showcase Your Video Content in a Beautifully Designed Page Tailored to Your liking. Created with You in Mind",
 };
 
 export default function RootLayout({
@@ -20,6 +22,7 @@ export default function RootLayout({
           <Navbar />
           {children}
         </body>
+        <Analytics />
       </SupabaseProvider>
     </html>
   );

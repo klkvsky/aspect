@@ -39,7 +39,7 @@ export default function PersonalPage() {
 
     if (data) {
       setProfile(data.user as unknown as User);
-      console.log(data);
+      // console.log(data);
     } else {
       console.error(error);
     }
