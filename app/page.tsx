@@ -27,8 +27,6 @@ export default function MainPage() {
   const [gridRefence, setGridRefence] = useState<any>(null);
   const [videos, setVideos] = useState<Video[]>([]);
 
-  const [profile, setProfile] = useState<User>();
-
   const [videoInFullscreen, setVideoInFullscreen] = useState<number>(-1);
 
   const fetchVideos = useCallback(async () => {
@@ -41,9 +39,8 @@ export default function MainPage() {
       console.log(error);
     } else {
       const orderedVideos = data.sort((a, b) => {
-        return a.position - b.position;
+        return a.added_at - b.added_at;
       });
-
       setVideos(orderedVideos as unknown as Video[]);
     }
   }, [supabase]);
@@ -53,7 +50,6 @@ export default function MainPage() {
       if (!Muuri) return;
       const grid = new Muuri(".gridMuui", {
         items: ".item",
-        // dragEnabled: false,
         layout: {
           fillGaps: true,
           rounding: true,
@@ -84,7 +80,7 @@ export default function MainPage() {
   }
 
   return (
-    <main className="mt-6 w-full">
+    <main className="mt-6 mb-24 w-full px-6">
       <div
         className={clsx(
           "fixed top-0 left-0 w-screen !z-[888] h-screen bg-black/50 backdrop-blur-lg transition-all ease-in-out duration-300",
@@ -99,7 +95,6 @@ export default function MainPage() {
             key={index}
             className={clsx(
               "item relative",
-              `item--${video.size}`,
               videoInFullscreen - 1 === index && "!z-[999]"
             )}
             data-name={video.id}
@@ -131,10 +126,7 @@ export default function MainPage() {
                 onIncrease={() => {
                   IncreaseSizeOfCard(index, gridRefence, video.id, supabase);
                 }}
-                isUser={
-                  profile?.user_metadata.email.split("@")[0] ===
-                  pathname.split("/")[1]
-                }
+                isUser={false}
                 onOpenInFullscreen={() => {
                   onOpenInFullscreen(index + 1);
                 }}

@@ -17,9 +17,8 @@
 
 .gridMuui {
   position: relative;
-  max-width: 95vw;
-  margin: 0 auto;
 }
+
 .item {
   display: block;
   position: absolute;
@@ -98,6 +97,7 @@
 .item.muuri-item-hidden {
   z-index: 0;
 }
+
 .item-content {
   display: grid;
   place-items: center;
@@ -105,7 +105,6 @@
   width: 100%;
   height: 100%;
 }
-
 
 .special-button::before {
 		content: '';
