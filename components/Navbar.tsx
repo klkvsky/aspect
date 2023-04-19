@@ -20,6 +20,7 @@ import {
   AtSymbolIcon,
   UserIcon,
   XMarkIcon,
+  HomeIcon
 } from "@heroicons/react/24/solid";
 
 export default function Navbar() {
@@ -172,7 +173,7 @@ export default function Navbar() {
           href="/"
           className="rounded-full border border-neutral-700 w-[40px] h-auto aspect-square transition-all ease-in-out duration-300 z-0 grid place-items-center hover:border-opacity-40 group/button cursor-pointer bg-black/40"
         >
-          <RectangleStackIcon className="w-1/2 h-auto aspect-square text-white/80  group-hover/button:scale-[1.1] group-hover/button:text-white transition-all ease-in-out" />
+          <HomeIcon className="w-1/2 h-auto aspect-square text-white/80  group-hover/button:scale-[1.1] group-hover/button:text-white transition-all ease-in-out -translate-y-0.5" />
         </Link>
         {false && (
           <div className="flex flex-row items-center gap-2">
