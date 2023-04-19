@@ -12,7 +12,6 @@ import {
   ArrowsPointingOutIcon,
   SpeakerWaveIcon,
   SpeakerXMarkIcon,
-  ArrowsPointingInIcon,
   TrashIcon,
   PlusIcon,
   MinusIcon,
@@ -150,9 +149,34 @@ export default function VideoCard(props: {
     }
   };
 
+  useEffect(() => {
+    if (!videoRef.current) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && isFullscreen) {
+        setIsFullscreen(false);
+        onOpenInFullscreen();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isFullscreen, onOpenInFullscreen]);
+
   return (
     <div
       className="relative group rounded-[6px] lg:rounded-[10px] transition-all ease-in-out group/main w-full"
+      tabIndex={1}
+      onFocus={() => {
+        setIsHovered(true);
+        setIsMuted(false);
+      }}
+      onBlur={() => {
+        setIsHovered(false);
+        setIsMuted(true);
+      }}
       onClick={() => {
         setIsMuted(!isMuted);
       }}
@@ -200,6 +224,7 @@ export default function VideoCard(props: {
       >
         <button
           className="w-[26px] h-[26px] aspect-square rounded-full bg-neutral-950/50 backdrop-blur-sm hover:border-opacity-50 p-1.5 hover:!scale-[1.04] active:!scale-[0.96] transition-all ease-in-out opacity-0 group-hover:opacity-50 hover:!opacity-100 grid place-items-center ml-auto absolute top-2 right-2"
+          tabIndex={-1}
           onClick={() => {
             setIsFullscreen(!isFullscreen);
             onOpenInFullscreen();
@@ -246,6 +271,7 @@ export default function VideoCard(props: {
             <Link
               href={`/${videoMetaData.author}`}
               className="flex flex-row items-center gap-[4px] relative p-1 pr-2 hover:!scale-[1.04] active:!scale-[0.96] transition-all ease-in-out w-fit group-hover:opacity-50 hover:!opacity-100 group/avatar"
+              tabIndex={-1}
             >
               <div className="rounded-full bg-neutral-950/50 backdrop-blur-sm border border-neutral-700 absolute top-0 left-0 w-full group-hover:w-[26px] group-hover:h-[26px] group-hover:translate-y-[1px] h-full transition-all ease-in-out duration-300 z-0 group-hover/avatar:!w-full" />
 
@@ -269,6 +295,7 @@ export default function VideoCard(props: {
         </div>
         <button
           className="w-[26px] h-[26px] aspect-square rounded-full bg-neutral-950/50 backdrop-blur-sm border border-neutral-700 hover:border-opacity-50 p-1.5 hover:!scale-[1.04] active:!scale-[0.96] opacity-0 group-hover:opacity-50 hover:!opacity-100 grid place-items-center transition-all ease-in-out absolute bottom-2 right-2"
+          tabIndex={-1}
           onClick={() => {
             setIsMuted(!isMuted);
           }}
