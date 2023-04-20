@@ -80,7 +80,7 @@ export default function MainPage() {
   }
 
   return (
-    <main className="mt-6 mb-24 w-full px-6">
+    <main className="mt-6 pb-24 w-full md:px-6">
       <div
         className={clsx(
           "fixed top-0 left-0 w-screen !z-[888] h-screen bg-black/50 backdrop-blur-lg transition-all ease-in-out duration-300",
@@ -101,7 +101,7 @@ export default function MainPage() {
             id={`item-${index}`}
           >
             <div
-              className="item-content p-[10px] w-full h-full relative z-10"
+              className="item-content px-[4px] py-[4px] lg:p-[10px] w-full h-full relative z-10"
               style={
                 video.aspect_ratio !== 0
                   ? {

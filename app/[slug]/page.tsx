@@ -250,7 +250,7 @@ export default function PersonalPage() {
                   {syncingStatus}
                 </div>
               )}
-              <div className={`item-content p-[10px] w-full h-full`}>
+              <div className={`item-content px-[4px] py-[4px] lg:p-[10px] w-full h-full`}>
                 <ProfileCard
                   key={index}
                   photo="https://zqjvsefawyzwxbridxjw.supabase.co/storage/v1/object/public/videos/avatars/avatar.png"
@@ -301,7 +301,7 @@ export default function PersonalPage() {
                 </div>
               )}
               <div
-                className="item-content p-[10px] w-full h-full relative z-10"
+                className="item-content px-[4px] py-[4px] lg:p-[10px] w-full h-full relative z-10"
                 style={
                   video.aspect_ratio !== 0
                     ? {

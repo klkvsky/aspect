@@ -1,4 +1,5 @@
 "use client";
+
 import { Video } from "@/interfaces/video";
 
 import { useSupabase } from "@/app/supabase-provider";
@@ -187,23 +188,36 @@ export default function VideoCard(props: {
         setIsHovered(false);
       }}
     >
+      {/* <VideoJS options={videoJsOptions} onReady={handlePlayerReady} /> */}
+
       <video
         ref={videoRef}
         loop={true}
         muted={isMuted}
+        controls={false}
+        playsInline={true}
         className={clsx(
           "transition-all ease-in-out max-w-[95vw] relative origin-center rounded-[6px] lg:rounded-[10px] select-none outline-none",
-          isLoaded && "border border-[#363636]"
+          isLoaded && "border border-transparent md:border-[#232323]"
         )}
         style={{
           transform: isFullscreen ? `translate(${centerPosition})` : "",
           width: isFullscreen ? newDimensions.width : "100%",
           height: isFullscreen ? newDimensions.height : "100%",
         }}
-        onLoadedMetadata={() => {
+        onLoadedMetadata={(elem) => {
           onLoad();
+          if (videoRef.current) {
+            videoRef.current.currentTime = 0;
+            videoRef.current.play();
+
+            setTimeout(() => {
+              if (!videoRef.current) return;
+              videoRef.current.pause();
+            }, 100);
+          }
         }}
-        onLoadedData={() => {
+        onLoadedData={(elem) => {
           setIsLoaded(true);
         }}
       >
@@ -270,7 +284,7 @@ export default function VideoCard(props: {
           ) : (
             <Link
               href={`/${videoMetaData.author}`}
-              className="flex flex-row items-center gap-[4px] relative p-1 pr-2 hover:!scale-[1.04] active:!scale-[0.96] transition-all ease-in-out w-fit group-hover:opacity-50 hover:!opacity-100 group/avatar"
+              className="flex flex-row items-center gap-[2px] lg:gap-[4px] relative p-1 pr-2 hover:!scale-[1.04] active:!scale-[0.96] transition-all ease-in-out w-fit group-hover:opacity-50 hover:!opacity-100 group/avatar"
               tabIndex={-1}
             >
               <div className="rounded-full bg-neutral-950/50 backdrop-blur-sm border border-neutral-700 absolute top-0 left-0 w-full group-hover:w-[26px] group-hover:h-[26px] group-hover:translate-y-[1px] h-full transition-all ease-in-out duration-300 z-0 group-hover/avatar:!w-full" />
@@ -281,13 +295,13 @@ export default function VideoCard(props: {
                   width={18}
                   height={18}
                   alt="Profile picture of Me"
-                  className="object-cover rounded-full overflow-hidden aspect-square z-10"
+                  className="object-cover rounded-full overflow-hidden aspect-square z-10 scale-75 md:scale-100"
                 />
               ) : (
-                <div className="w-[18px] h-[18px] aspect-square rounded-full z-10 bg-neutral-700 animate-pulse" />
+                <div className="w-[18px] h-[18px] aspect-square rounded-full z-10 bg-neutral-700 animate-pulse scale-75 md:scale-100" />
               )}
 
-              <span className="text-sm font-semibold text-white/50 group-hover:opacity-0 group-hover:pointer-events-none z-10 group-hover:max-w-0 group-hover/avatar:!opacity-100 group-hover/avatar:pointer-events-auto group-hover/avatar:!max-w-full group-hover/avatar:text-white duration-300">
+              <span className="text-xs md:text-sm font-semibold text-white/50 group-hover:opacity-0 group-hover:pointer-events-none z-10 group-hover:max-w-0 group-hover/avatar:!opacity-100 group-hover/avatar:pointer-events-auto group-hover/avatar:!max-w-full group-hover/avatar:text-white duration-300">
                 {videoMetaData.author}
               </span>
             </Link>
