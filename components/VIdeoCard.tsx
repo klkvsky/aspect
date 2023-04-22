@@ -168,7 +168,10 @@ export default function VideoCard(props: {
 
   return (
     <div
-      className="relative group rounded-[6px] lg:rounded-[10px] transition-all ease-in-out group/main w-full"
+      className={clsx(
+        "relative group rounded-[6px] lg:rounded-[10px] transition-all ease-in-out group/main w-full cursor-pointer"
+        // !isFullscreen && "hover:scale-[1.04]"
+      )}
       tabIndex={1}
       onFocus={() => {
         setIsHovered(true);
@@ -177,9 +180,6 @@ export default function VideoCard(props: {
       onBlur={() => {
         setIsHovered(false);
         setIsMuted(true);
-      }}
-      onClick={() => {
-        setIsMuted(!isMuted);
       }}
       onMouseEnter={() => {
         setIsHovered(true);
@@ -193,21 +193,23 @@ export default function VideoCard(props: {
       <video
         ref={videoRef}
         loop={true}
-        muted={isMuted}
+        muted={!isFullscreen && !isMuted}
         controls={false}
         playsInline={true}
         className={clsx(
           "transition-all ease-in-out max-w-[95vw] relative origin-center rounded-[6px] lg:rounded-[10px] select-none outline-none",
-          isLoaded && "border border-transparent md:border-[#232323]"
+          isLoaded && "border border-transparent md:border-[#232323]",
+          !isFullscreen &&
+            "opacity-80 group-hover/main:opacity-100"
         )}
         style={{
-          transform: isFullscreen ? `translate(${centerPosition})` : "",
+          transform: isFullscreen ? `translate(${centerPosition})` : '',
           width: isFullscreen ? newDimensions.width : "100%",
           height: isFullscreen ? newDimensions.height : "100%",
         }}
         onLoadedMetadata={(elem) => {
           onLoad();
-          if (videoRef.current) {
+          if (videoRef.current && window.innerWidth < 768) {
             videoRef.current.currentTime = 0;
             videoRef.current.play();
 
@@ -220,6 +222,10 @@ export default function VideoCard(props: {
         onLoadedData={(elem) => {
           setIsLoaded(true);
         }}
+        onClick={() => {
+          setIsFullscreen(!isFullscreen);
+          onOpenInFullscreen();
+        }}
       >
         <source src={videoMetaData.url} className="z-0 relative" />
         <track kind="captions" />
@@ -227,17 +233,17 @@ export default function VideoCard(props: {
 
       <div
         className={clsx(
-          "absolute top-0 left-0 w-full h-full z-10 transition-all ease-in-out duration-200",
+          "absolute bottom-0 left-0 z-10 transition-all ease-in-out duration-200",
           !isLoaded && "opacity-0"
         )}
         style={{
           transform: isFullscreen ? `translate(${centerPosition})` : "",
           width: isFullscreen ? newDimensions.width : "100%",
-          height: isFullscreen ? newDimensions.height : "100%",
+          height: "26px",
         }}
       >
         <button
-          className="w-[26px] h-[26px] aspect-square rounded-full bg-neutral-950/50 backdrop-blur-sm hover:border-opacity-50 p-1.5 hover:!scale-[1.04] active:!scale-[0.96] transition-all ease-in-out opacity-0 group-hover:opacity-50 hover:!opacity-100 grid place-items-center ml-auto absolute top-2 right-2"
+          className="w-[26px] h-[26px] aspect-square rounded-full bg-neutral-950/50 backdrop-blur-sm hover:border-opacity-50 p-1.5 hover:!scale-[1.04] active:!scale-[0.96] transition-all ease-in-out opacity-0 group-hover:opacity-50 hover:!opacity-100 place-items-center ml-auto absolute top-2 right-2 hidden"
           tabIndex={-1}
           onClick={() => {
             setIsFullscreen(!isFullscreen);
@@ -287,7 +293,7 @@ export default function VideoCard(props: {
               className="flex flex-row items-center gap-[2px] lg:gap-[4px] relative p-1 pr-2 hover:!scale-[1.04] active:!scale-[0.96] transition-all ease-in-out w-fit group-hover:opacity-50 hover:!opacity-100 group/avatar"
               tabIndex={-1}
             >
-              <div className="rounded-full bg-neutral-950/50 backdrop-blur-sm border border-neutral-700 absolute top-0 left-0 w-full group-hover:w-[26px] group-hover:h-[26px] group-hover:translate-y-[1px] h-full transition-all ease-in-out duration-300 z-0 group-hover/avatar:!w-full" />
+              <div className="rounded-full bg-neutral-950/50 backdrop-blur-sm border border-neutral-800 absolute top-0 left-0 w-full group-hover:w-[26px] group-hover:h-[26px] group-hover:translate-y-[1px] h-full transition-all ease-in-out duration-300 z-0 group-hover/avatar:!w-full" />
 
               {authorImage ? (
                 <Image
@@ -301,7 +307,7 @@ export default function VideoCard(props: {
                 <div className="w-[18px] h-[18px] aspect-square rounded-full z-10 bg-neutral-700 animate-pulse scale-75 md:scale-100" />
               )}
 
-              <span className="text-xs md:text-sm font-semibold text-white/50 group-hover:opacity-0 group-hover:pointer-events-none z-10 group-hover:max-w-0 group-hover/avatar:!opacity-100 group-hover/avatar:pointer-events-auto group-hover/avatar:!max-w-full group-hover/avatar:text-white duration-300">
+              <span className="text-xs md:text-sm font-semibold text-[#ffffff]/30 group-hover:opacity-0 group-hover:pointer-events-none z-10 group-hover:max-w-0 group-hover/avatar:!opacity-100 group-hover/avatar:pointer-events-auto group-hover/avatar:!max-w-full group-hover/avatar:text-white duration-300">
                 {videoMetaData.author}
               </span>
             </Link>

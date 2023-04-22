@@ -3,25 +3,18 @@
 import clsx from "clsx";
 
 import { Video } from "@/interfaces/video";
-import { User } from "@/interfaces/user";
 
 import { useSupabase } from "./supabase-provider";
 
-import {
-  IncreaseSizeOfCard,
-  DecreaseSizeOfCard,
-  UpdateProfileCardAspectRatio,
-} from "@/lib/videoUtils";
+import { IncreaseSizeOfCard, DecreaseSizeOfCard } from "@/lib/videoUtils";
 
 import Muuri from "@/lib/localMuuri";
 
 import { useCallback, useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
 
 import VideoCard from "@/components/VIdeoCard";
 
 export default function MainPage() {
-  const pathname = usePathname();
   const { supabase } = useSupabase();
 
   const [gridRefence, setGridRefence] = useState<any>(null);
@@ -79,6 +72,36 @@ export default function MainPage() {
     }
   }
 
+  // function switchFullscreenVideoNext() {
+  //   if (videoInFullscreen === -1) return;
+  //   if (videoInFullscreen === videos.length) {
+  //     setVideoInFullscreen(1);
+  //   } else {
+  //     setVideoInFullscreen(videoInFullscreen + 1);
+  //   }
+  // }
+
+  // function switchFullscreenVideoPrevious() {
+  //   if (videoInFullscreen === -1) return;
+  //   if (videoInFullscreen === 1) {
+  //     setVideoInFullscreen(videos.length);
+  //   } else {
+  //     setVideoInFullscreen(videoInFullscreen - 1);
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   if (videoInFullscreen !== -1) {
+  //     document.addEventListener("keydown", (e) => {
+  //       if (e.key === "ArrowRight") {
+  //         switchFullscreenVideoNext();
+  //       } else if (e.key === "ArrowLeft") {
+  //         switchFullscreenVideoPrevious();
+  //       }
+  //     });
+  //   }
+  // }, [videoInFullscreen]);
+
   return (
     <main className="mt-6 pb-24 w-full md:px-6">
       <div
@@ -113,7 +136,7 @@ export default function MainPage() {
               }
             >
               {videoInFullscreen === -1 && (
-                <div className="absolute top-[11px] left-[11px] w-[calc(100%-22px)] h-[calc(100%-22px)] rounded-[14px] bg-neutral-900 animate-pulse" />
+                <div className="absolute top-[11px] left-[11px] w-[calc(100%-22px)] h-[calc(100%-22px)] rounded-[14px] bg-neutral-900 animate-pulse hidden" />
               )}
               <VideoCard
                 videoMetaData={video}
